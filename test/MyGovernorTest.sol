@@ -23,6 +23,7 @@ contract MyGovernorTest is Test {
     address[] internal executors;
 
     function setUp() external {
+        user = makeAddr("user");
         govToken = new GovToken();
         govToken.mint(user,INITIAL_SUPPLY);
 
@@ -41,6 +42,12 @@ contract MyGovernorTest is Test {
         timeLock.revokeRole(adminRole,msg.sender);
 
         box = new Box(msg.sender);
+        vm.prank(msg.sender);
         box.transferOwnership(address(timeLock));
+    }
+
+    function testCantUpdateBoxWithoutGovernance() public {
+        vm.expectRevert();
+        box.store(1);
     }
 }
